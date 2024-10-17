@@ -213,7 +213,6 @@ void norm(double *data, int n, int d, double *norm_matrix) {
             degree_inv_sqrt[i] = 0.0;
         }
     }
-    //print_one_dim_mat(degree_inv_sqrt, n, n);
     
     double *result_1 = (double*)malloc(n * n * sizeof(double));
     mul_mat(degree_inv_sqrt, similarity_matrix, result_1, n);
@@ -280,6 +279,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         norm(data, n, d, norm_matrix);
+        print_one_dim_mat(norm_matrix, n, n);
     } else {
         fprintf(stderr, "An Error Has Occurred11\n");
         return 1;
