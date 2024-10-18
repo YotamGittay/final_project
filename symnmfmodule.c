@@ -15,7 +15,7 @@ double* parse_python_nested_list_to_c_flat_array_and_calc_dims(PyObject *data_li
     }
     *d = PyList_Size(PyList_GetItem(data_list, 0));
 
-    double *data = (double *)malloc((*n) * (*d) * sizeof(double));
+    double *data = (double *)calloc((*n) * (*d), sizeof(double));
     if (!data) {
         printf("Unable to allocate memory for data.");
         return NULL;
@@ -54,7 +54,7 @@ static PyObject* py_sym(PyObject* self, PyObject* args) {
     }
     double *data = parse_python_nested_list_to_c_flat_array_and_calc_dims(data_list, &n, &d);
 
-    double *similarity_matrix = (double *)malloc(n * n * sizeof(double));
+    double *similarity_matrix = (double *)calloc(n * n, sizeof(double));
     if (!similarity_matrix) {
         free(data);
         printf("Unable to allocate memory for similarity matrix.");
@@ -79,7 +79,7 @@ static PyObject* py_ddg(PyObject* self, PyObject* args) {
     }
     double *data = parse_python_nested_list_to_c_flat_array_and_calc_dims(data_list, &n, &d);
 
-    double *degree_matrix = (double *)malloc(n * n * sizeof(double));
+    double *degree_matrix = (double *)calloc(n * n, sizeof(double));
     if (!degree_matrix) {
         free(data);
         printf("Unable to allocate memory for similarity matrix.");
@@ -103,7 +103,7 @@ static PyObject* py_norm(PyObject* self, PyObject* args) {
     }
     double *data = parse_python_nested_list_to_c_flat_array_and_calc_dims(data_list, &n, &d);
 
-    double *norm_matrix = (double *)malloc(n * n * sizeof(double));
+    double *norm_matrix = (double *)calloc(n * n, sizeof(double));
     if (!norm_matrix) {
         free(data);
         printf("Unable to allocate memory for similarity matrix.");

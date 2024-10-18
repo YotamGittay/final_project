@@ -113,7 +113,7 @@ double* read_data(char *file_name, int *n, int *d) {
     fclose(file);
     
     /* Allocate memory for the data array based on n and d */
-    data = (double*)malloc((*n) * (*d) * sizeof(double));
+    data = (double*)calloc((*n) * (*d), sizeof(double));
     if (data == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
@@ -160,13 +160,13 @@ double calc_squared_euclidan_distance_for_two_vectors(double *A, double *B, int 
 
 /* Function to optimize H for SymNMF */
 void symnmf(double *W, double *H, int n, int k) {
-    int iter, i, j, l, converged;
+    int iter, i, j, converged;
     // W = n x n. H = n x k. WH = n x k. HHT = n x n.  HHTH = n x k
-    double *H_transpose = (double *)malloc(k * n * sizeof(double));
-    double *WH = (double *)malloc(n * k * sizeof(double));
-    double *temp_HHT = (double *)malloc(n * n * sizeof(double));
-    double *HHTH = (double *)malloc(n * k * sizeof(double));
-    double *new_H = (double *)malloc(n * k * sizeof(double));
+    double *H_transpose = (double *)calloc(k * n, sizeof(double));
+    double *WH = (double *)calloc(n * k, sizeof(double));
+    double *temp_HHT = (double *)calloc(n * n, sizeof(double));
+    double *HHTH = (double *)calloc(n * k, sizeof(double));
+    double *new_H = (double *)calloc(n * k, sizeof(double));
     if (!H_transpose ||!WH || !temp_HHT || !HHTH) {
         fprintf(stderr, "An Error Has Occurred100");
         exit(1);
@@ -184,12 +184,13 @@ void symnmf(double *W, double *H, int n, int k) {
         /* calc new_H */ 
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
-                new_H[i * k + j] = 1 - BETA + (BETA * WH[i * k + j] / HHTH[i * k + j]);
+                new_H[i * k + j] = H[i * k + j] * (1 - BETA + (BETA * WH[i * k + j] / HHTH[i * k + j]));
             }
         }
+
         converged = check_matrix_convergence(H, new_H, n, k);
         copy_one_dim_mat(new_H, H, n, k);
-        if (converged) {
+        if (converged == 1) {
             break;
         }
         
@@ -198,6 +199,8 @@ void symnmf(double *W, double *H, int n, int k) {
     free(WH);
     free(HHTH);
     free(H_transpose);
+    free(temp_HHT);
+    free(new_H);
 } 
 
 
@@ -205,7 +208,7 @@ void symnmf(double *W, double *H, int n, int k) {
 void sym(double *data, int n, int d, double *similarity_matrix) {
     // printf("entered sym\n");
 
-    int i, j, k;
+    int i, j;
     double dist_squared;
     
     for (i = 0; i < n; i++) {
@@ -261,9 +264,9 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
 void norm(double *data, int n, int d, double *norm_matrix) {
     // printf("entered norm\n");
     int i;
-    double *similarity_matrix = (double*)malloc(n * n * sizeof(double));
-    double *degree_matrix = (double*)malloc(n * n * sizeof(double));
-    double *degree_inv_sqrt = (double*)malloc(n * n * sizeof(double));
+    double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
+    double *degree_matrix = (double*)calloc(n * n, sizeof(double));
+    double *degree_inv_sqrt = (double*)calloc(n * n, sizeof(double));
     
     if (similarity_matrix == NULL || degree_matrix == NULL || degree_inv_sqrt == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -281,7 +284,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
         }
     }
     
-    double *result_1 = (double*)malloc(n * n * sizeof(double));
+    double *result_1 = (double*)calloc(n * n, sizeof(double));
     multiply_matrices(degree_inv_sqrt, similarity_matrix, result_1, n, n, n);
     multiply_matrices(result_1, degree_inv_sqrt, norm_matrix, n, n, n); 
 
@@ -311,7 +314,7 @@ int main(int argc, char *argv[]) {
 
 
     if (strcmp(goal, "sym") == 0) {
-        similarity_matrix = (double *)malloc(n * n * sizeof(double));
+        similarity_matrix = (double *)calloc(n * n, sizeof(double));
         if (!similarity_matrix) {
             fprintf(stderr, "An Error Has Occurred8\n");
             return 1;
@@ -329,7 +332,7 @@ int main(int argc, char *argv[]) {
         print_one_dim_mat(degree_matrix, n, n); 
         free(degree_matrix);
     } else if (strcmp(goal, "norm") == 0) {
-        norm_matrix = (double *)malloc(n * n * sizeof(double));
+        norm_matrix = (double *)calloc(n * n, sizeof(double));
         if (!norm_matrix) {
             fprintf(stderr, "An Error Has Occurred10\n");
             return 1;
