@@ -40,7 +40,10 @@ def main():
     k, goal, file_name = parse_args()
     X = read_data(file_name)
 
-    # error handling
+    # check if k is an integer smaller than the number of points (rows of x)
+    if not isinstance(k, int) or k < 1 or k > len(X):
+        print("An Error Has Occurred")
+        sys.exit(1)
 
     if goal == "sym":
         similarity_matrix = symnmf.sym(X)
