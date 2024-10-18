@@ -59,12 +59,12 @@ void copy_matrix(double *mat, double *target, int n, int d) {
 void multiply_matrices(double *A, double *B, double *result, int n, int m, int p) {
     int i, j, k;
     
-    // Initialize the result matrix to zero
+    /* Initialize the result matrix to zero */ 
     for (i = 0; i < n * p; i++) {
         result[i] = 0.0;
     }
     
-    // Perform matrix multiplication
+    /* Perform matrix multiplication */
     for (i = 0; i < n; i++) {
         for (j = 0; j < p; j++) {
             for (k = 0; k < m; k++) {
@@ -157,7 +157,8 @@ double* read_points_from_file(char *file_name, int n, int d) {
 /* Function to calculate the squared Euclidean distance between two vectors */
 double calc_squared_euclidean_distance_for_two_vectors(double *A, double *B, int d){
     double dist_squared = 0.0;
-    for (int k = 0; k < d; k++) {
+    int k;
+    for (k = 0; k < d; k++) {
         double diff = A[k] - B[k];
         dist_squared += diff * diff;
     }
@@ -169,7 +170,7 @@ double calc_squared_euclidean_distance_for_two_vectors(double *A, double *B, int
 /* Function to optimize H for SymNMF */
 void symnmf(double *W, double *H, int n, int k) {
     int iter, i, j, converged;
-    // W = n x n. H = n x k. WH = n x k. HHT = n x n.  HHTH = n x k
+    /* dimensions: W=nxn. H=nxk. WH=nxk. HHT=nxn. HHTH=nxk */ 
     double *H_transpose = (double *)calloc(k * n, sizeof(double));
     double *WH = (double *)calloc(n * k, sizeof(double));
     double *temp_HHT = (double *)calloc(n * n, sizeof(double));
@@ -214,7 +215,7 @@ void symnmf(double *W, double *H, int n, int k) {
 
 /* Function to calculate the similarity matrix */
 void sym(double *data, int n, int d, double *similarity_matrix) {
-    // printf("entered sym\n");
+    /* printf("entered sym\n"); */ 
 
     int i, j;
     double dist_squared;
@@ -229,16 +230,11 @@ void sym(double *data, int n, int d, double *similarity_matrix) {
             }
         }
     }
-
-    // printf("similarity matrix:\n");
-    // print_matrix(similarity_matrix, n, n);
-    // printf("exiting sym\n");
 }
 
 
 /* Function to compute diagonal degree matrix*/ 
 void ddg(double *data, int n, int d, double *degree_matrix) {
-    // printf("entered ddg\n");
     
     int i, j;
     double degree_sum;
@@ -261,10 +257,6 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
         degree_matrix[i * n + i] = degree_sum;
     }
 
-    // printf("degree matrix:\n");
-    // print_matrix(degree_matrix, n, n);
-    // printf("exiting ddg\n");
-
     free(similarity_matrix);
 }
 
@@ -274,6 +266,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_inv_sqrt = (double*)calloc(n * n, sizeof(double));
+    double *result_1;
     
     if (similarity_matrix == NULL || degree_matrix == NULL || degree_inv_sqrt == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -285,7 +278,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     /* calc degree_inv_sqrt matrix (D^-0.5)*/
     calc_degree_inv_sqrt_matrix(degree_matrix, degree_inv_sqrt, n);
     /* Calc (D^-0.5 * A * D^-0.5) in two steps */
-    double *result_1 = (double*)calloc(n * n, sizeof(double));
+    result_1 = (double*)calloc(n * n, sizeof(double));
     multiply_matrices(degree_inv_sqrt, similarity_matrix, result_1, n, n, n);
     multiply_matrices(result_1, degree_inv_sqrt, norm_matrix, n, n, n); 
 
