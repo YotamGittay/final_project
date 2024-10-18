@@ -95,7 +95,7 @@ void get_dimensions_from_file(char *file_name, int *n, int *d) {
     
     file = fopen(file_name, "r");
     if (!file) {
-        fprintf(stderr, "An Error Has Occurred\n");
+        printf("An Error Has Occurred");
         exit(1);
     }
     
@@ -127,13 +127,13 @@ double* read_points_from_file(char *file_name, int n, int d) {
     /* Allocate memory for the data array based on n and d */
     data = (double*)calloc(n * d, sizeof(double));
     if (data == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        printf("An Error Has Occurred");
         exit(1);
     }
     
     file = fopen(file_name, "r");
     if (!file) {
-        fprintf(stderr, "An Error Has Occurred\n");
+        printf("An Error Has Occurred");
         exit(1);
     }
     
@@ -177,7 +177,7 @@ void symnmf(double *W, double *H, int n, int k) {
     double *HHTH = (double *)calloc(n * k, sizeof(double));
     double *new_H = (double *)calloc(n * k, sizeof(double));
     if (!H_transpose ||!WH || !temp_HHT || !HHTH) {
-        fprintf(stderr, "An Error Has Occurred100");
+        printf("An Error Has Occurred");
         exit(1);
     }
 
@@ -214,9 +214,7 @@ void symnmf(double *W, double *H, int n, int k) {
 
 
 /* Function to calculate the similarity matrix */
-void sym(double *data, int n, int d, double *similarity_matrix) {
-    /* printf("entered sym\n"); */ 
-
+void sym(double *data, int n, int d, double *similarity_matrix) { 
     int i, j;
     double dist_squared;
     
@@ -240,7 +238,7 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
     double degree_sum;
     double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
     if (similarity_matrix == NULL) {
-        fprintf(stderr, "An Error Has Occurred 101\n");
+        printf("An Error Has Occurred");
         exit(1);
     }
 
@@ -269,7 +267,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     double *result_1;
     
     if (similarity_matrix == NULL || degree_matrix == NULL || degree_inv_sqrt == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        printf("An Error Has Occurred");
         exit(1);
     }
     /* calc sym and ddg matrices*/
@@ -294,7 +292,7 @@ int main(int argc, char *argv[]) {
     double *data, *goal_matrix;
 
     if (argc != 3) {
-        fprintf(stderr, "An Error Has Occurred7\n");
+        printf("An Error Has Occurred");
         return 1;
     }
     goal = argv[1];
@@ -306,7 +304,7 @@ int main(int argc, char *argv[]) {
     /* initialize our goal_matrix, will be used for similarity/degree/norm, depending on goal */
     goal_matrix = (double *)calloc(n * n, sizeof(double));
     if (!goal_matrix) {
-        fprintf(stderr, "An Error Has Occurred8\n");
+        printf("An Error Has Occurred");
         return 1;
     }
 
@@ -317,7 +315,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(goal, "norm") == 0) {
         norm(data, n, d, goal_matrix);
     } else {
-        fprintf(stderr, "An Error Has Occurred11\n");
+        printf("An Error Has Occurred");
         free(goal_matrix);
         free(data);
         return 1;

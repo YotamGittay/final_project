@@ -6,7 +6,7 @@ import symnmf
 # Function to parse command line arguments
 def parse_args():
     if len(sys.argv) != 4:
-        print("An Error Has Occurred12")
+        print("An Error Has Occurred")
         sys.exit(1)
     try:
         k = int(sys.argv[1])
@@ -14,7 +14,7 @@ def parse_args():
         file_name = sys.argv[3]
         return k, goal, file_name
     except ValueError:
-        print("An Error Has Occurred13")
+        print("An Error Has Occurred")
         sys.exit(1)
 
 
@@ -24,7 +24,7 @@ def read_data(file_name):
         data = np.loadtxt(file_name, delimiter=",").tolist()
         return data
     except Exception:
-        print("An Error Has Occurred14")
+        print("An Error Has Occurred")
         sys.exit(1)
 
 
@@ -43,6 +43,8 @@ def initialize_h(W, k):
 def main():
     k, goal, file_name = parse_args()
     X = read_data(file_name)
+
+    # error handling
 
     if goal == "sym":
         similarity_matrix = symnmf.sym(X)
@@ -63,7 +65,7 @@ def main():
         np.savetxt(sys.stdout, H_final, delimiter=",", fmt="%.4f")
 
     else:
-        print("An Error Has Occurred15")
+        print("An Error Has Occurred")
         sys.exit(1)
 
 

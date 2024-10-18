@@ -4,18 +4,20 @@ from sklearn.metrics import silhouette_score
 import symnmf
 from sklearn.cluster import KMeans
 
+
 # Function to parse command line arguments
 def parse_args():
     if len(sys.argv) != 3:
-        print("An Error Has Occurred1")
+        print("An Error Has Occurred")
         sys.exit(1)
     try:
         k = int(sys.argv[1])
         file_name = sys.argv[2]
         return k, file_name
     except ValueError:
-        print("An Error Has Occurred2")
+        print("An Error Has Occurred")
         sys.exit(1)
+
 
 # Function to read data points from file
 def read_data(file_name):
@@ -23,8 +25,9 @@ def read_data(file_name):
         data = np.loadtxt(file_name)
         return data
     except Exception:
-        print("An Error Has Occurred3")
+        print("An Error Has Occurred")
         sys.exit(1)
+
 
 # Main function to compare SymNMF and KMeans
 def main():
@@ -48,6 +51,7 @@ def main():
     # Output the scores
     print(f"nmf: {score_symnmf:.4f}")
     print(f"kmeans: {score_kmeans:.4f}")
+
 
 if __name__ == "__main__":
     main()
