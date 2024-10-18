@@ -176,7 +176,7 @@ void symnmf(double *W, double *H, int n, int k) {
     double *temp_HHT = (double *)calloc(n * n, sizeof(double));
     double *HHTH = (double *)calloc(n * k, sizeof(double));
     double *new_H = (double *)calloc(n * k, sizeof(double));
-    if (!H_transpose ||!WH || !temp_HHT || !HHTH) {
+    if (!H_transpose ||!WH || !temp_HHT || !HHTH || !new_H) {
         printf("An Error Has Occurred");
         exit(1);
     }
@@ -283,6 +283,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     free(similarity_matrix);
     free(degree_matrix);
     free(degree_inv_sqrt);
+    free(result_1);
 }
 
 /* Main function*/ 
