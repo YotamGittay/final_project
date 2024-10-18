@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stddef.h>
 #include "symnmf.h"
 
 void print_one_dim_mat(double *mat, int n, int d) {
@@ -12,7 +13,10 @@ void print_one_dim_mat(double *mat, int n, int d) {
         }
         printf("\n");
     }
+    printf("\n");
+    printf("\n");
 }
+
 
 /* Function to read data points from file */ 
 double* read_data(char *file_name, int *n, int *d) {
@@ -121,7 +125,7 @@ void symnmf(double *W, double *H, int n, int k, int max_iter, double tol) {
         /* Update H */ 
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
-                /*looks like the update is incorrect*/
+                /*todo: looks like the update is incorrect*/
                 H[i * k + j] *= (0.5 * (WH[i * k + j] / HHTH[i * k + j]));
             }
         }
@@ -140,12 +144,11 @@ void symnmf(double *W, double *H, int n, int k, int max_iter, double tol) {
     free(HHTH);
 } 
 
-/* Function to compute similarity matrix*/ 
-#include <math.h>
 
 /* Function to calculate the similarity matrix */
 void sym(double *data, int n, int d, double *similarity_matrix) {
-   
+    // printf("entered sym\n");
+
     int i, j, k;
     double dist_squared;
     
@@ -163,15 +166,25 @@ void sym(double *data, int n, int d, double *similarity_matrix) {
             }
         }
     }
+    // printf("similarity matrix:\n");
+    // print_one_dim_mat(similarity_matrix, n, n);
+    // printf("exiting sym\n");
 }
 
 
 /* Function to compute diagonal degree matrix*/ 
-#include <stddef.h>
-
 void ddg(double *data, int n, int d, double *degree_matrix) {
+    // printf("entered ddg\n");
+    
     int i, j;
     double degree_sum;
+    double *similarity_matrix = (double*)malloc(n * n * sizeof(double));
+    if (similarity_matrix == NULL) {
+        fprintf(stderr, "An Error Has Occurred 101\n");
+        exit(1);
+    }
+
+    sym(data, n, d, similarity_matrix);
     
     for (i = 0; i < n * n; i++) {
         degree_matrix[i] = 0.0;
@@ -181,17 +194,24 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
         degree_sum = 0.0;
         
         for (j = 0; j < n; j++) {
-            degree_sum += data[i * n + j];
+            degree_sum += similarity_matrix[i * n + j];
         }
         
         degree_matrix[i * n + i] = degree_sum;
     }
+
+    // printf("degree matrix:\n");
+    // print_one_dim_mat(degree_matrix, n, n);
+    // printf("exiting ddg\n");
+
+    free(similarity_matrix);
 }
 
 
 /* Function to compute normalized similarity matrix*/ 
 void norm(double *data, int n, int d, double *norm_matrix) {
-    int i, j, k;
+    // printf("entered norm\n");
+    int i;
     double *similarity_matrix = (double*)malloc(n * n * sizeof(double));
     double *degree_matrix = (double*)malloc(n * n * sizeof(double));
     double *degree_inv_sqrt = (double*)malloc(n * n * sizeof(double));
@@ -202,9 +222,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     }
 
     sym(data, n, d, similarity_matrix);
-    //print_one_dim_mat(similarity_matrix, n, n);
-    ddg(similarity_matrix, n, d, degree_matrix);
-    //print_one_dim_mat(degree_matrix, n, n);
+    ddg(data, n, d, degree_matrix);
     for (i = 0; i < n * n; i++) {
         double degree_value = degree_matrix[i];
         if (degree_value != 0.0) {
@@ -217,7 +235,15 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     double *result_1 = (double*)malloc(n * n * sizeof(double));
     mul_mat(degree_inv_sqrt, similarity_matrix, result_1, n);
     mul_mat(result_1, degree_inv_sqrt, norm_matrix, n); 
+
+    // printf("normalized matrix:\n");
+    // print_one_dim_mat(norm_matrix, n, n);
+    // printf("exiting norm\n");
+
+    free(similarity_matrix);
+    free(degree_matrix);
 }
+
 
 void mul_mat(double *A, double *B, double *result, int dim) {
     int i, j, k;
@@ -237,11 +263,12 @@ void mul_mat(double *A, double *B, double *result, int dim) {
     }
 }
 
+
 /* Main function*/ 
 int main(int argc, char *argv[]) {
     char *goal;
     char *file_name;
-    int n, d, i, j;
+    int n, d;
     double *data, *similarity_matrix, *degree_matrix, *norm_matrix;
 
     if (argc != 3) {
@@ -261,25 +288,26 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         sym(data, n, d, similarity_matrix);
-        /* print_one_dim_mat(similarity_matrix, n, n); */
+        print_one_dim_mat(similarity_matrix, n, n); 
+        free(similarity_matrix);
     } else if (strcmp(goal, "ddg") == 0) {
-        similarity_matrix = (double *)malloc(n * n * sizeof(double));
         degree_matrix = (double *)calloc(n * n, sizeof(double));
-        if (!similarity_matrix || !degree_matrix) {
+        if (!degree_matrix) {
             fprintf(stderr, "An Error Has Occurred9\n");
             return 1;
         }
-        sym(data, n, d, similarity_matrix);
-        ddg(similarity_matrix, n, d, degree_matrix);
-        print_one_dim_mat(degree_matrix, n, n);
+        ddg(data, n, d, degree_matrix);
+        print_one_dim_mat(degree_matrix, n, n); 
+        free(degree_matrix);
     } else if (strcmp(goal, "norm") == 0) {
         norm_matrix = (double *)malloc(n * n * sizeof(double));
-        if (!similarity_matrix || !degree_matrix || !norm_matrix) {
+        if (!norm_matrix) {
             fprintf(stderr, "An Error Has Occurred10\n");
             return 1;
         }
         norm(data, n, d, norm_matrix);
-        print_one_dim_mat(norm_matrix, n, n);
+        print_one_dim_mat(norm_matrix, n, n); 
+        free(norm_matrix);
     } else {
         fprintf(stderr, "An Error Has Occurred11\n");
         return 1;

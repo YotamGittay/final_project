@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import symnmf
 
+
 # Function to parse command line arguments
 def parse_args():
     if len(sys.argv) != 4:
@@ -16,14 +17,16 @@ def parse_args():
         print("An Error Has Occurred13")
         sys.exit(1)
 
+
 # Function to read data points from file
 def read_data(file_name):
     try:
-        data = np.loadtxt(file_name, delimiter=',').tolist()
+        data = np.loadtxt(file_name, delimiter=",").tolist()
         return data
     except Exception:
         print("An Error Has Occurred14")
         sys.exit(1)
+
 
 # Initialize H according to Section 1.4.1
 def initialize_h(W, k):
@@ -31,32 +34,38 @@ def initialize_h(W, k):
     np.random.seed(1234)
     return [[np.random.uniform(0, 2 * np.sqrt(m / k)) for _ in range(k)] for _ in range(len(W))]
 
+
+# Todo: check why do we need to send the number of clusters even when using goal=sym/ddg/norm
+# (Maybe it is the requirement of the assignment)
+
+
 # Main function to execute the desired operation
 def main():
     k, goal, file_name = parse_args()
     X = read_data(file_name)
 
-    if goal == 'sym':
+    if goal == "sym":
         similarity_matrix = symnmf.sym(list(map(list, X)))
-        np.savetxt(sys.stdout, similarity_matrix, delimiter=',', fmt='%.4f')
+        np.savetxt(sys.stdout, similarity_matrix, delimiter=",", fmt="%.4f")
 
-    elif goal == 'ddg':
+    elif goal == "ddg":
         degree_matrix = symnmf.ddg(list(map(list, X)))
-        np.savetxt(sys.stdout, degree_matrix, delimiter=',', fmt='%.4f')
+        np.savetxt(sys.stdout, degree_matrix, delimiter=",", fmt="%.4f")
 
-    elif goal == 'norm':
+    elif goal == "norm":
         norm_matrix = symnmf.norm(list(map(list, X)))
-        np.savetxt(sys.stdout, norm_matrix, delimiter=',', fmt='%.4f')
+        np.savetxt(sys.stdout, norm_matrix, delimiter=",", fmt="%.4f")
 
-    elif goal == 'symnmf':
+    elif goal == "symnmf":
         W = symnmf.norm(X)
         H_init = initialize_h(W, k)
         H_final = symnmf.symnmf(list(map(list, W)), list(map(list, H_init)))
-        np.savetxt(sys.stdout, H_final, delimiter=',', fmt='%.4f')
+        np.savetxt(sys.stdout, H_final, delimiter=",", fmt="%.4f")
 
     else:
         print("An Error Has Occurred15")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
