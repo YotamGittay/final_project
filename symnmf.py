@@ -45,21 +45,21 @@ def main():
     X = read_data(file_name)
 
     if goal == "sym":
-        similarity_matrix = symnmf.sym(list(map(list, X)))
+        similarity_matrix = symnmf.sym(X)
         np.savetxt(sys.stdout, similarity_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "ddg":
-        degree_matrix = symnmf.ddg(list(map(list, X)))
+        degree_matrix = symnmf.ddg(X)
         np.savetxt(sys.stdout, degree_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "norm":
-        norm_matrix = symnmf.norm(list(map(list, X)))
+        norm_matrix = symnmf.norm(X)
         np.savetxt(sys.stdout, norm_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "symnmf":
         W = symnmf.norm(X)
         H_init = initialize_h(W, k)
-        H_final = symnmf.symnmf(list(map(list, W)), list(map(list, H_init)))
+        H_final = symnmf.symnmf(W, H_init)
         np.savetxt(sys.stdout, H_final, delimiter=",", fmt="%.4f")
 
     else:

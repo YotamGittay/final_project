@@ -12,20 +12,20 @@ int const MAX_ITER = 300;
 
 /* HELPER FUNCTIONS */
 
-
-void print_one_dim_mat(double *mat, int n, int d) {
+void print_matrix(double *mat, int n, int d) {
     int row, col;
     for (row = 0; row < n; row++) {
         for (col = 0; col < d; col++) {
-            printf("%.4f ", mat[row * (d) + col]);
+            printf("%.4f", mat[row * d + col]);
+            if (col < d - 1) {
+                printf(",");
+            }
         }
         printf("\n");
     }
-    printf("\n");
-    printf("\n");
 }
 
-void transpose_one_dim_mat(double *mat, double *target, int n, int d) {
+void transpose_matrix(double *mat, double *target, int n, int d) {
     int row, col;
     for (row = 0; row < n; row++) {
         for (col = 0; col < d; col++) {
@@ -34,7 +34,7 @@ void transpose_one_dim_mat(double *mat, double *target, int n, int d) {
     }
 }
 
-void copy_one_dim_mat(double *mat, double *target, int n, int d) {
+void copy_matrix(double *mat, double *target, int n, int d) {
     int row, col;
     for (row = 0; row < n; row++) {
         for (col = 0; col < d; col++) {
@@ -75,7 +75,7 @@ int check_matrix_convergence(double *H, double *new_H, int n, int k) {
 }
 
 /* Function to read data points from file */ 
-double* read_data(char *file_name, int *n, int *d) {
+double* read_points_from_file(char *file_name, int *n, int *d) {
     FILE *file;
     char line[1024];
     char *str, *token;
@@ -177,7 +177,7 @@ void symnmf(double *W, double *H, int n, int k) {
         multiply_matrices(W, H, WH, n, n, k);
 
         /* transpose H and compute HHTH = (H*H^T) * H */ 
-        transpose_one_dim_mat(H, H_transpose, n, k );
+        transpose_matrix(H, H_transpose, n, k );
         multiply_matrices(H, H_transpose, temp_HHT, n, k, n);
         multiply_matrices(temp_HHT, H, HHTH, n, n, k);
 
@@ -189,7 +189,7 @@ void symnmf(double *W, double *H, int n, int k) {
         }
 
         converged = check_matrix_convergence(H, new_H, n, k);
-        copy_one_dim_mat(new_H, H, n, k);
+        copy_matrix(new_H, H, n, k);
         if (converged == 1) {
             break;
         }
@@ -222,7 +222,7 @@ void sym(double *data, int n, int d, double *similarity_matrix) {
         }
     }
     // printf("similarity matrix:\n");
-    // print_one_dim_mat(similarity_matrix, n, n);
+    // print_matrix(similarity_matrix, n, n);
     // printf("exiting sym\n");
 }
 
@@ -253,7 +253,7 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
     }
 
     // printf("degree matrix:\n");
-    // print_one_dim_mat(degree_matrix, n, n);
+    // print_matrix(degree_matrix, n, n);
     // printf("exiting ddg\n");
 
     free(similarity_matrix);
@@ -289,7 +289,7 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     multiply_matrices(result_1, degree_inv_sqrt, norm_matrix, n, n, n); 
 
     // printf("normalized matrix:\n");
-    // print_one_dim_mat(norm_matrix, n, n);
+    // print_matrix(norm_matrix, n, n);
     // printf("exiting norm\n");
 
     free(similarity_matrix);
@@ -310,7 +310,7 @@ int main(int argc, char *argv[]) {
 
     goal = argv[1];
     file_name = argv[2];
-    data = read_data(file_name, &n, &d);
+    data = read_points_from_file(file_name, &n, &d);
 
 
     if (strcmp(goal, "sym") == 0) {
@@ -320,7 +320,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         sym(data, n, d, similarity_matrix);
-        print_one_dim_mat(similarity_matrix, n, n); 
+        print_matrix(similarity_matrix, n, n); 
         free(similarity_matrix);
     } else if (strcmp(goal, "ddg") == 0) {
         degree_matrix = (double *)calloc(n * n, sizeof(double));
@@ -329,7 +329,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         ddg(data, n, d, degree_matrix);
-        print_one_dim_mat(degree_matrix, n, n); 
+        print_matrix(degree_matrix, n, n); 
         free(degree_matrix);
     } else if (strcmp(goal, "norm") == 0) {
         norm_matrix = (double *)calloc(n * n, sizeof(double));
@@ -338,7 +338,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         norm(data, n, d, norm_matrix);
-        print_one_dim_mat(norm_matrix, n, n); 
+        print_matrix(norm_matrix, n, n); 
         free(norm_matrix);
     } else {
         fprintf(stderr, "An Error Has Occurred11\n");
