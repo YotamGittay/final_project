@@ -170,7 +170,7 @@ double calc_squared_euclidean_distance_for_two_vectors(double *A, double *B, int
 /* Function to optimize H for SymNMF */
 void symnmf(double *W, double *H, int n, int k) {
     int iter, i, j, converged;
-    /* dimensions: W=nxn. H=nxk. WH=nxk. HHT=nxn. HHTH=nxk */ 
+    double denominator, numerator;
     double *H_transpose = (double *)calloc(k * n, sizeof(double));
     double *WH = (double *)calloc(n * k, sizeof(double));
     double *temp_HHT = (double *)calloc(n * n, sizeof(double));
@@ -180,11 +180,9 @@ void symnmf(double *W, double *H, int n, int k) {
         printf("An Error Has Occurred");
         exit(1);
     }
-
     for (iter = 0; iter < MAX_ITER; iter++) {
         /* Compute WH = W * H */ 
         multiply_matrices(W, H, WH, n, n, k);
-
         /* transpose H and compute HHTH = (H*H^T) * H */ 
         transpose_matrix(H, H_transpose, n, k );
         multiply_matrices(H, H_transpose, temp_HHT, n, k, n);
@@ -193,23 +191,22 @@ void symnmf(double *W, double *H, int n, int k) {
         /* calc new_H */ 
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
-                new_H[i * k + j] = H[i * k + j] * (1 - BETA + (BETA * WH[i * k + j] / HHTH[i * k + j]));
+                numerator = WH[i * k + j];
+                denominator = HHTH[i * k + j];
+                if (denominator == 0.0) {
+                    new_H[i * k + j] = 0.0;
+                } else {
+                    new_H[i * k + j] = H[i * k + j] * (1 - BETA + (BETA * numerator / denominator));
+                }
             }
         }
-
         converged = check_matrix_convergence(H, new_H, n, k);
         copy_matrix(new_H, H, n, k);
         if (converged == 1) {
             break;
-        }
-        
+        }  
     }
-
-    free(WH);
-    free(HHTH);
-    free(H_transpose);
-    free(temp_HHT);
-    free(new_H);
+    free(WH); free(HHTH); free(H_transpose); free(temp_HHT); free(new_H);
 } 
 
 
