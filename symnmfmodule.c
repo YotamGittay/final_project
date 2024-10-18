@@ -119,61 +119,31 @@ static PyObject* py_norm(PyObject* self, PyObject* args) {
     return result;
 }
 
-// // Wrapper function for symnmf
-// static PyObject* py_symnmf(PyObject* self, PyObject* args) {
-//     PyObject *W_list, *H_list;
-//     int max_iter;
-//     double tol;
-//     if (!PyArg_ParseTuple(args, "OOid", &W_list, &H_list, &max_iter, &tol)) {
-//         return NULL;
-//     }
+// Wrapper function for symnmf
+static PyObject* py_symnmf(PyObject* self, PyObject* args) {
+    PyObject *W_list, *H_list;
+    int n, k;
+    if (!PyArg_ParseTuple(args, "OO", &W_list, &H_list)) {
+        return NULL;
+    }
+    double *W = parse_python_nested_list_to_c_flat_array_and_calc_dims(W_list, &n, &n);
+    double *H = parse_python_nested_list_to_c_flat_array_and_calc_dims(H_list, &n, &k);
 
-//     int n = PyList_Size(W_list);
-//     int k = PyList_Size(PyList_GetItem(H_list, 0));
+    symnmf(W, H, n, k);
 
-//     double *W = (double *)malloc(n * n * sizeof(double));
-//     double *H = (double *)malloc(n * k * sizeof(double));
-//     if (!W || !H) {
-//         PyErr_SetString(PyExc_MemoryError, "Unable to allocate memory for matrices.");
-//         return NULL;
-//     }
+    PyObject *result = parse_c_array_to_python_nested_list(H, n, k);
 
-//     for (int i = 0; i < n; i++) {
-//         PyObject *row = PyList_GetItem(W_list, i);
-//         for (int j = 0; j < n; j++) {
-//             W[i * n + j] = PyFloat_AsDouble(PyList_GetItem(row, j));
-//         }
-//     }
-
-//     for (int i = 0; i < n; i++) {
-//         PyObject *row = PyList_GetItem(H_list, i);
-//         for (int j = 0; j < k; j++) {
-//             H[i * k + j] = PyFloat_AsDouble(PyList_GetItem(row, j));
-//         }
-//     }
-
-//     symnmf(W, H, n, k, max_iter, tol);
-
-//     PyObject *result = PyList_New(n);
-//     for (int i = 0; i < n; i++) {
-//         PyObject *row = PyList_New(k);
-//         for (int j = 0; j < k; j++) {
-//             PyList_SetItem(row, j, PyFloat_FromDouble(H[i * k + j]));
-//         }
-//         PyList_SetItem(result, i, row);
-//     }
-
-//     free(W);
-//     free(H);
-//     return result;
-// }
+    free(W);
+    free(H);
+    return result;
+}
 
 // Method definitions
 static PyMethodDef SymnmfMethods[] = {
     {"sym", py_sym, METH_VARARGS, "Compute the similarity matrix."},
     {"ddg", py_ddg, METH_VARARGS, "Compute the diagonal degree matrix."},
     {"norm", py_norm, METH_VARARGS, "Compute the normalized similarity matrix."},
-    // {"symnmf", py_symnmf, METH_VARARGS, "Compute the Symmetric Non-negative Matrix Factorization."},
+    {"symnmf", py_symnmf, METH_VARARGS, "Compute the Symmetric Non-negative Matrix Factorization."},
     {NULL, NULL, 0, NULL}
 };
 

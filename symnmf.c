@@ -5,6 +5,14 @@
 #include <stddef.h>
 #include "symnmf.h"
 
+/* CONSTS*/
+double const BETA = 0.5;
+double const EPSILON = 1e-4;
+int const MAX_ITER = 300;
+
+/* HELPER FUNCTIONS */
+
+
 void print_one_dim_mat(double *mat, int n, int d) {
     int row, col;
     for (row = 0; row < n; row++) {
@@ -17,6 +25,54 @@ void print_one_dim_mat(double *mat, int n, int d) {
     printf("\n");
 }
 
+void transpose_one_dim_mat(double *mat, double *target, int n, int d) {
+    int row, col;
+    for (row = 0; row < n; row++) {
+        for (col = 0; col < d; col++) {
+            target[col * n + row] = mat[row * d + col];
+        }
+    }
+}
+
+void copy_one_dim_mat(double *mat, double *target, int n, int d) {
+    int row, col;
+    for (row = 0; row < n; row++) {
+        for (col = 0; col < d; col++) {
+            target[row * d + col] = mat[row * d + col];
+        }
+    }
+}
+
+void multiply_matrices(double *A, double *B, double *result, int n, int m, int p) {
+    int i, j, k;
+    
+    // Initialize the result matrix to zero
+    for (i = 0; i < n * p; i++) {
+        result[i] = 0.0;
+    }
+    
+    // Perform matrix multiplication
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < p; j++) {
+            for (k = 0; k < m; k++) {
+                result[i * p + j] += A[i * m + k] * B[k * p + j];
+            }
+        }
+    }
+}
+
+int check_matrix_convergence(double *H, double *new_H, int n, int k) {
+    int i, j;
+    double diff = 0;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < k; j++) {
+            diff += (new_H[i * k + j] - H[i * k + j]) * (new_H[i * k + j] - H[i * k + j]);
+        }
+    }
+
+    return diff < EPSILON ? 1 : 0;
+
+}
 
 /* Function to read data points from file */ 
 double* read_data(char *file_name, int *n, int *d) {
@@ -90,58 +146,58 @@ double* read_data(char *file_name, int *n, int *d) {
     return data;
 }
 
+/* Function to calculate the squared Euclidean distance between two vectors */
+double calc_squared_euclidan_distance_for_two_vectors(double *A, double *B, int d){
+    double dist_squared = 0.0;
+    for (int k = 0; k < d; k++) {
+        double diff = A[k] - B[k];
+        dist_squared += diff * diff;
+    }
+    return dist_squared;
+}
+
+/* MAIN LOGIC FUNCTIONS*/
 
 /* Function to optimize H for SymNMF */
-void symnmf(double *W, double *H, int n, int k, int max_iter, double tol) {
-    int iter, i, j, l;
+void symnmf(double *W, double *H, int n, int k) {
+    int iter, i, j, l, converged;
+    // W = n x n. H = n x k. WH = n x k. HHT = n x n.  HHTH = n x k
+    double *H_transpose = (double *)malloc(k * n * sizeof(double));
     double *WH = (double *)malloc(n * k * sizeof(double));
+    double *temp_HHT = (double *)malloc(n * n * sizeof(double));
     double *HHTH = (double *)malloc(n * k * sizeof(double));
-    if (!WH || !HHTH) {
+    double *new_H = (double *)malloc(n * k * sizeof(double));
+    if (!H_transpose ||!WH || !temp_HHT || !HHTH) {
         fprintf(stderr, "An Error Has Occurred100");
         exit(1);
     }
 
-    for (iter = 0; iter < max_iter; iter++) {
+    for (iter = 0; iter < MAX_ITER; iter++) {
         /* Compute WH = W * H */ 
+        multiply_matrices(W, H, WH, n, n, k);
+
+        /* transpose H and compute HHTH = (H*H^T) * H */ 
+        transpose_one_dim_mat(H, H_transpose, n, k );
+        multiply_matrices(H, H_transpose, temp_HHT, n, k, n);
+        multiply_matrices(temp_HHT, H, HHTH, n, n, k);
+
+        /* calc new_H */ 
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
-                WH[i * k + j] = 0;
-                for (l = 0; l < n; l++) {
-                    WH[i * k + j] += W[i * n + l] * H[l * k + j];
-                }
+                new_H[i * k + j] = 1 - BETA + (BETA * WH[i * k + j] / HHTH[i * k + j]);
             }
         }
-
-        /* Compute HHTH = (H^T * H) * H */ 
-        for (i = 0; i < n; i++) {
-            for (j = 0; j < k; j++) {
-                HHTH[i * k + j] = 0;
-                for (l = 0; l < k; l++) {
-                    HHTH[i * k + j] += H[i * k + l] * H[l * k + j];
-                }
-            }
-        }
-
-        /* Update H */ 
-        for (i = 0; i < n; i++) {
-            for (j = 0; j < k; j++) {
-                /*todo: looks like the update is incorrect*/
-                H[i * k + j] *= (0.5 * (WH[i * k + j] / HHTH[i * k + j]));
-            }
-        }
-
-        /* Check for convergence (optional) */ 
-        double diff = 0;
-        for (i = 0; i < n * k; i++) {
-            diff += fabs(WH[i] - HHTH[i]);
-        }
-        if (diff < tol) {
+        converged = check_matrix_convergence(H, new_H, n, k);
+        copy_one_dim_mat(new_H, H, n, k);
+        if (converged) {
             break;
         }
+        
     }
 
     free(WH);
     free(HHTH);
+    free(H_transpose);
 } 
 
 
@@ -157,11 +213,7 @@ void sym(double *data, int n, int d, double *similarity_matrix) {
             if (i == j) {
                 similarity_matrix[i * n + j] = 0.0;
             } else {
-                dist_squared = 0.0;
-                for (k = 0; k < d; k++) {
-                    double diff = data[i * d + k] - data[j * d + k];
-                    dist_squared += diff * diff;
-                }
+                dist_squared = calc_squared_euclidan_distance_for_two_vectors(&data[i * d], &data[j * d], d);
                 similarity_matrix[i * n + j] = exp(-dist_squared / 2.0);
             }
         }
@@ -178,7 +230,7 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
     
     int i, j;
     double degree_sum;
-    double *similarity_matrix = (double*)malloc(n * n * sizeof(double));
+    double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
     if (similarity_matrix == NULL) {
         fprintf(stderr, "An Error Has Occurred 101\n");
         exit(1);
@@ -186,10 +238,7 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
 
     sym(data, n, d, similarity_matrix);
     
-    for (i = 0; i < n * n; i++) {
-        degree_matrix[i] = 0.0;
-    }
-    
+    /* Calc degree sum for every row */
     for (i = 0; i < n; i++) {
         degree_sum = 0.0;
         
@@ -233,8 +282,8 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     }
     
     double *result_1 = (double*)malloc(n * n * sizeof(double));
-    mul_mat(degree_inv_sqrt, similarity_matrix, result_1, n);
-    mul_mat(result_1, degree_inv_sqrt, norm_matrix, n); 
+    multiply_matrices(degree_inv_sqrt, similarity_matrix, result_1, n, n, n);
+    multiply_matrices(result_1, degree_inv_sqrt, norm_matrix, n, n, n); 
 
     // printf("normalized matrix:\n");
     // print_one_dim_mat(norm_matrix, n, n);
@@ -243,26 +292,6 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     free(similarity_matrix);
     free(degree_matrix);
 }
-
-
-void mul_mat(double *A, double *B, double *result, int dim) {
-    int i, j, k;
-    
-    // Initialize the result matrix to zero
-    for (i = 0; i < dim * dim; i++) {
-        result[i] = 0.0;
-    }
-    
-    // Perform matrix multiplication
-    for (i = 0; i < dim; i++) {
-        for (j = 0; j < dim; j++) {
-            for (k = 0; k < dim; k++) {
-                result[i * dim + j] += A[i * dim + k] * B[k * dim + j];
-            }
-        }
-    }
-}
-
 
 /* Main function*/ 
 int main(int argc, char *argv[]) {

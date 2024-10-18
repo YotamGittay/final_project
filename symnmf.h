@@ -14,7 +14,7 @@ void ddg(double *data, int n, int d, double *degree_matrix);
 void norm(double *data, int n, int d, double *norm_matrix);
 
 /* Function to compute symnmf*/
-void symnmf(double *W, double *H, int n, int k, int max_iter, double tol);
+void symnmf(double *W, double *H, int n, int k);
 
 /* Function to multiply square matrices*/
 void mul_mat(double *A, double *B, double *result, int dim);
