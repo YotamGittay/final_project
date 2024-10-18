@@ -1,5 +1,5 @@
 python3 setup.py build_ext --inplace
-python3 symnmf.py 5 ddg input_2.txt
+python3 symnmf.py 5 ddg input_1.txt
 
 gcc symnmf.c -o symnmf
 ./symnmf ddg input_2.txt

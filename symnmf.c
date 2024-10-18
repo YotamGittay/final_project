@@ -120,8 +120,8 @@ void get_dimensions_from_file(char *file_name, int *n, int *d) {
 /* Function to read data points from file */ 
 double* read_points_from_file(char *file_name, int n, int d) {
     FILE *file;
-    char line[1024], *str, *token;
-    int count, row = 0, col = 0;
+    char line[1024], *token;
+    int row = 0, col = 0;
     double *data;
     
     /* Allocate memory for the data array based on n and d */
@@ -271,7 +271,6 @@ void ddg(double *data, int n, int d, double *degree_matrix) {
 
 /* Function to compute normalized similarity matrix*/ 
 void norm(double *data, int n, int d, double *norm_matrix) {
-    int i;
     double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_inv_sqrt = (double*)calloc(n * n, sizeof(double));
