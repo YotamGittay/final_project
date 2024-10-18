@@ -2,8 +2,6 @@
 #include <Python.h>
 #include "symnmf.h"
 
-/* Todo: make sure the error messages are in the correct format */
-
 double* transform_python_nested_list_to_c_flat_array(PyObject *data_list, int rows, int cols) {
     double *data = (double *)calloc((rows) * (cols), sizeof(double));
     if (!data) {
@@ -162,7 +160,6 @@ static struct PyModuleDef symnmfmodule = {
     SymnmfMethods
 };
 
-/* TODO: it looks a bit different in the tutorial notebook, might want to change it accordingly */
 /* Module initialization function */ 
 PyMODINIT_FUNC PyInit_symnmf(void) {
     return PyModule_Create(&symnmfmodule);

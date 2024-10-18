@@ -35,10 +35,6 @@ def initialize_h(W, k):
     return [[np.random.uniform(0, 2 * np.sqrt(m / k)) for _ in range(k)] for _ in range(len(W))]
 
 
-# Todo: check why do we need to send the number of clusters even when using goal=sym/ddg/norm
-# (Maybe it is the requirement of the assignment)
-
-
 # Main function to execute the desired operation
 def main():
     k, goal, file_name = parse_args()
