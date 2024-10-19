@@ -154,13 +154,13 @@ static PyMethodDef SymnmfMethods[] = {
 /* Module definition */
 static struct PyModuleDef symnmfmodule = {
     PyModuleDef_HEAD_INIT,
-    "symnmf",
+    "symnmf_module",
     NULL,
     -1,
     SymnmfMethods
 };
 
 /* Module initialization function */ 
-PyMODINIT_FUNC PyInit_symnmf(void) {
+PyMODINIT_FUNC PyInit_symnmf_module(void) {
     return PyModule_Create(&symnmfmodule);
 }
