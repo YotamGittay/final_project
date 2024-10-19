@@ -30,8 +30,9 @@ def read_data(file_name):
 
 # Initialize H according to Section 1.4.1
 def initialize_h(W, k):
-    m = m = sum(map(sum, W)) / (len(W) * len(W[0]))
+    m = sum(map(sum, W)) / (len(W) * len(W[0]))
     np.random.seed(1234)
+    print("k = ", k)
     return [[np.random.uniform(0, 2 * np.sqrt(m / k)) for _ in range(k)] for _ in range(len(W))]
 
 
