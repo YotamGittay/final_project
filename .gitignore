@@ -3,3 +3,4 @@
 build/lib.macosx-13.0-arm64-cpython-312/
 build/temp.macosx-13.0-arm64-cpython-312/
 symnmf.*
+__pycache__/

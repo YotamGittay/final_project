@@ -1,8 +1,8 @@
 import sys
 import numpy as np
 from sklearn.metrics import silhouette_score
+from kmeans import kmeans_hw1
 import symnmf
-from sklearn.cluster import KMeans
 
 
 # Function to parse command line arguments
@@ -22,11 +22,22 @@ def parse_args():
 # Function to read data points from file
 def read_data(file_name):
     try:
-        data = np.loadtxt(file_name)
+        data = np.loadtxt(file_name, delimiter=",").tolist()
         return data
     except Exception:
         print("An Error Has Occurred")
         sys.exit(1)
+
+
+# Function that gets the points and the H matrix and returns the cluster label for each point
+def H_matrix_to_cluster_labels(H):
+    return np.argmax(H, axis=1)
+
+
+# TODO: test that it is working correctly
+# Function that gets the points and the centroids and returns the clusters
+def get_kmeans_labels_by_centroids(X, centroids):
+    return np.argmin(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
 
 
 # Main function to compare SymNMF and KMeans
@@ -35,14 +46,14 @@ def main():
     X = read_data(file_name)
 
     # SymNMF clustering
-    W = symnmf.compute_similarity_matrix(X.tolist())
-    H_init = np.random.uniform(0, 2 * np.sqrt(np.mean(W) / k), size=(len(W), k))
-    H_final = symnmf.symnmf(W, H_init.tolist())
-    labels_symnmf = np.argmax(H_final, axis=1)
+    # here we need somehow to get the H matrix, this function should do the job
+    # but I wasn't able to import it
+    H = symnmf.get_symnmf_H_matrix(X, k)
+    labels_symnmf = H_matrix_to_cluster_labels(H)
 
     # KMeans clustering
-    kmeans = KMeans(n_clusters=k, random_state=1234).fit(X)
-    labels_kmeans = kmeans.labels_
+    kmeans_centroids = kmeans_hw1(X, k)
+    labels_kmeans = get_kmeans_labels_by_centroids(X, kmeans_centroids)
 
     # Calculate silhouette scores
     score_symnmf = silhouette_score(X, labels_symnmf)

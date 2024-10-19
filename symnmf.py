@@ -35,6 +35,13 @@ def initialize_h(W, k):
     return [[np.random.uniform(0, 2 * np.sqrt(m / k)) for _ in range(k)] for _ in range(len(W))]
 
 
+# A function for analysis, gets the point and the number of clusters and returns the H matrix
+def get_symnmf_H_matrix(X, k):
+    W = symnmf.norm(X)
+    H_init = initialize_h(X, k)
+    return symnmf.symnmf(W, H_init)
+
+
 # Main function to execute the desired operation
 def main():
     k, goal, file_name = parse_args()
