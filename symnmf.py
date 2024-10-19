@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-import symnmf
+import symnmf_module
 
 
 # Function to parse command line arguments
@@ -37,9 +37,9 @@ def initialize_h(W, k):
 
 # A function for analysis, gets the point and the number of clusters and returns the H matrix
 def get_symnmf_H_matrix(X, k):
-    W = symnmf.norm(X)
+    W = symnmf_module.norm(X)
     H_init = initialize_h(X, k)
-    return symnmf.symnmf(W, H_init)
+    return symnmf_module.symnmf(W, H_init)
 
 
 # Main function to execute the desired operation
@@ -53,21 +53,21 @@ def main():
         sys.exit(1)
 
     if goal == "sym":
-        similarity_matrix = symnmf.sym(X)
+        similarity_matrix = symnmf_module.sym(X)
         np.savetxt(sys.stdout, similarity_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "ddg":
-        degree_matrix = symnmf.ddg(X)
+        degree_matrix = symnmf_module.ddg(X)
         np.savetxt(sys.stdout, degree_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "norm":
-        norm_matrix = symnmf.norm(X)
+        norm_matrix = symnmf_module.norm(X)
         np.savetxt(sys.stdout, norm_matrix, delimiter=",", fmt="%.4f")
 
     elif goal == "symnmf":
-        W = symnmf.norm(X)
+        W = symnmf_module.norm(X)
         H_init = initialize_h(W, k)
-        H_final = symnmf.symnmf(W, H_init)
+        H_final = symnmf_module.symnmf(W, H_init)
         np.savetxt(sys.stdout, H_final, delimiter=",", fmt="%.4f")
 
     else:

@@ -4,17 +4,16 @@ import numpy
 
 # Define the C extension module
 symnmf_module = Extension(
-    'symnmf',
-    sources=['symnmfmodule.c', 'symnmf.c'],
+    "symnmf",
+    sources=["symnmfmodule.c", "symnmf.c"],
     include_dirs=[numpy.get_include()],
-
 )
 
 # Setup configuration
 setup(
-    name='symnmf',
-    version='1.0',
-    description='Symmetric Non-negative Matrix Factorization',
+    name="symnmf",
+    version="1.0",
+    description="Symmetric Non-negative Matrix Factorization",
     ext_modules=[symnmf_module],
-    cmdclass={'build_ext': build_ext},
+    cmdclass={"build_ext": build_ext},
 )

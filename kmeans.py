@@ -84,8 +84,12 @@ def display_centroids(centroids: list):
         print(",".join(str(f"{x:.4f}") for x in centroid))
 
 
-def kmeans_hw1(k: int, input_file: str) -> list:
-    points = load_data_as_tuples(input_file)
+def turn_nested_list_to_list_of_tuples(nested_list: list) -> list:
+    return [tuple(x) for x in nested_list]
+
+
+def kmeans_hw1(k: int, X: list) -> list:
+    points = turn_nested_list_to_list_of_tuples(X)
     centroids = points[:k]
     for _ in range(MAX_ITER):
         clusters = assign_points_to_clusters(points, centroids)

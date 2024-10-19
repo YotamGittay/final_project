@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from sklearn.metrics import silhouette_score
 from kmeans import kmeans_hw1
-import symnmf
+from symnmf import get_symnmf_H_matrix
 
 
 # Function to parse command line arguments
@@ -37,7 +37,7 @@ def H_matrix_to_cluster_labels(H):
 # TODO: test that it is working correctly
 # Function that gets the points and the centroids and returns the clusters
 def get_kmeans_labels_by_centroids(X, centroids):
-    return np.argmin(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
+    return np.argmax(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
 
 
 # Main function to compare SymNMF and KMeans
@@ -48,7 +48,7 @@ def main():
     # SymNMF clustering
     # here we need somehow to get the H matrix, this function should do the job
     # but I wasn't able to import it
-    H = symnmf.get_symnmf_H_matrix(X, k)
+    H = get_symnmf_H_matrix(X, k)
     labels_symnmf = H_matrix_to_cluster_labels(H)
 
     # KMeans clustering
