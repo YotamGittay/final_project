@@ -37,7 +37,7 @@ def H_matrix_to_cluster_labels(H):
 # TODO: test that it is working correctly
 # Function that gets the points and the centroids and returns the clusters
 def get_kmeans_labels_by_centroids(X, centroids):
-    return np.argmax(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
+    return np.argmin(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
 
 
 # Main function to compare SymNMF and KMeans
