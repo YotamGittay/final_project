@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from sklearn.metrics import silhouette_score
 from kmeans import kmeans_hw1
-from symnmf import get_symnmf_H_matrix
+from symnmf import calc_symnmf_H_matrix
 
 
 # Function to parse command line arguments
@@ -31,15 +31,15 @@ def read_data(file_name):
 
 # Function that gets the points and the H matrix and returns the cluster label for each point
 def H_matrix_to_cluster_labels(H):
-
+    H = np.array(H)
     return np.argmax(H, axis=1)
 
 
-# TODO: test that it is working correctly
-# Function that gets the points and the centroids and returns the clusters
+# Function that gets the points and the centroids and returns the closest centroid to every point
 def get_kmeans_labels_by_centroids(X, centroids):
     X = np.array(X)
     centroids = np.array(centroids)
+    # Calc the distance between each point and each centroid, returns the index of the closest centroid
     return np.argmin(np.linalg.norm(X[:, None] - centroids, axis=2), axis=1)
 
 
@@ -49,10 +49,7 @@ def main():
     X = read_data(file_name)
 
     # SymNMF clustering
-    # here we need somehow to get the H matrix, this function should do the job
-    # but I wasn't able to import it
-    H = get_symnmf_H_matrix(X, k) # check all zeros
-    H = np.array(H)
+    H = calc_symnmf_H_matrix(X, k)
     labels_symnmf = H_matrix_to_cluster_labels(H)
 
     # KMeans clustering
@@ -61,7 +58,7 @@ def main():
 
     # Calculate silhouette scores
     X = np.array(X)
-    score_symnmf = silhouette_score(X, labels_symnmf) # all labels are zeros
+    score_symnmf = silhouette_score(X, labels_symnmf)
     score_kmeans = silhouette_score(X, labels_kmeans)
 
     # Output the scores

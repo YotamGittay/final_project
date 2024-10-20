@@ -32,14 +32,13 @@ def read_data(file_name):
 def initialize_h(W, k):
     m = sum(map(sum, W)) / (len(W) * len(W[0]))
     np.random.seed(1234)
-    print("k = ", k)
     return [[np.random.uniform(0, 2 * np.sqrt(m / k)) for _ in range(k)] for _ in range(len(W))]
 
 
 # A function for analysis, gets the point and the number of clusters and returns the H matrix
-def get_symnmf_H_matrix(X, k):
+def calc_symnmf_H_matrix(X, k):
     W = symnmf_module.norm(X)
-    H_init = initialize_h(X, k)
+    H_init = initialize_h(W, k)
     return symnmf_module.symnmf(W, H_init)
 
 
