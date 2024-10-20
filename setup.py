@@ -4,7 +4,7 @@ from setuptools.command.build_ext import build_ext
 # Define the C extension module
 symnmf_module = Extension(
     "symnmf_module",
-    sources=["symnmfmodule.c", "symnmf.c"],
+    sources=["symnmfmodule.c", "symnmf.c", "symnmf_helpers.c"],
 )
 
 # Setup configuration
