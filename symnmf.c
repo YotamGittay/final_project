@@ -9,8 +9,6 @@
 double const BETA = 0.5;
 int const MAX_ITER = 300;
 
-/* HELPER FUNCTIONS */
-
 
 /* MAIN LOGIC FUNCTIONS*/
 
@@ -23,10 +21,8 @@ void symnmf(double *W, double *H, int n, int k) {
     double *temp_HHT = (double *)calloc(n * n, sizeof(double));
     double *HHTH = (double *)calloc(n * k, sizeof(double));
     double *new_H = (double *)calloc(n * k, sizeof(double));
-    if (!H_transpose ||!WH || !temp_HHT || !HHTH || !new_H) {
-        printf("An Error Has Occurred");
-        exit(1);
-    }
+    check_memory_allocation_symnmf(H_transpose, WH, temp_HHT, HHTH, new_H);
+
     for (iter = 0; iter < MAX_ITER; iter++) {
         /* Compute WH = W * H */ 
         multiply_matrices(W, H, WH, n, n, k);
@@ -108,19 +104,15 @@ void norm(double *data, int n, int d, double *norm_matrix) {
     double *similarity_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_matrix = (double*)calloc(n * n, sizeof(double));
     double *degree_inv_sqrt = (double*)calloc(n * n, sizeof(double));
-    double *result_1;
-    
-    if (similarity_matrix == NULL || degree_matrix == NULL || degree_inv_sqrt == NULL) {
-        printf("An Error Has Occurred");
-        exit(1);
-    }
+    double *result_1= (double*)calloc(n * n, sizeof(double));
+    check_memory_allocation_norm(similarity_matrix, degree_matrix, degree_inv_sqrt, result_1);
+
     /* calc sym and ddg matrices*/
     sym(data, n, d, similarity_matrix);
     ddg(data, n, d, degree_matrix);
     /* calc degree_inv_sqrt matrix (D^-0.5)*/
     calc_degree_inv_sqrt_matrix(degree_matrix, degree_inv_sqrt, n);
     /* Calc (D^-0.5 * A * D^-0.5) in two steps */
-    result_1 = (double*)calloc(n * n, sizeof(double));
     multiply_matrices(degree_inv_sqrt, similarity_matrix, result_1, n, n, n);
     multiply_matrices(result_1, degree_inv_sqrt, norm_matrix, n, n, n); 
 

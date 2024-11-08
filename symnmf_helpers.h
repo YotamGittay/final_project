@@ -16,3 +16,8 @@ void get_dimensions_from_file(char *file_name, int *n, int *d);
 double* read_points_from_file(char *file_name, int n, int d);
 
 double calc_squared_euclidean_distance_for_two_vectors(double *A, double *B, int d);
+
+void check_memory_allocation_symnmf(double *H_transpose, double *WH, double *temp_HHT, double *HHTH, double *new_H);
+
+void check_memory_allocation_norm(double *similarity_matrix, double *degree_matrix, double *degree_inv_sqrt, double *result_1);
+

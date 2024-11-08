@@ -158,3 +158,27 @@ double calc_squared_euclidean_distance_for_two_vectors(double *A, double *B, int
     }
     return dist_squared;
 }
+
+void check_memory_allocation_symnmf(double *H_transpose, double *WH, double *temp_HHT, double *HHTH, double *new_H) {
+    if (H_transpose == NULL || WH == NULL || HHTH == NULL || temp_HHT == NULL || new_H == NULL) {
+        printf("An Error Has Occurred");
+        if (H_transpose) free(H_transpose);
+        if (WH) free(WH);
+        if (temp_HHT) free(temp_HHT);
+        if (HHTH) free(HHTH);
+        if (new_H) free(new_H);
+        exit(1);
+    }
+}
+
+void check_memory_allocation_norm(double *similarity_matrix, double *degree_matrix, double *degree_inv_sqrt, double *result_1) {
+    if (similarity_matrix == NULL || degree_matrix == NULL || degree_inv_sqrt == NULL || result_1 == NULL) {
+        printf("An Error Has Occurred");
+        if (similarity_matrix) free(similarity_matrix);
+        if (degree_matrix) free(degree_matrix);
+        if (degree_inv_sqrt) free(degree_inv_sqrt);
+        if (result_1) free(result_1);
+        exit(1);
+    }
+}
+
