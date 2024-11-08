@@ -28,7 +28,7 @@ def parse_and_validate_args() -> tuple:
     input_file = sys.argv[2]
 
     if not os.path.exists(input_file):
-        print(f"NA")
+        print(f"An Error Has Occurred")
         sys.exit(1)
     return k, input_file
 

@@ -47,6 +47,7 @@ static PyObject* py_sym(PyObject* self, PyObject* args) {
     int n = 0 , d = 0;
     PyObject *data_list;
     if (!PyArg_ParseTuple(args, "O", &data_list)) {
+        printf("An Error Has Occurred");
         return NULL;
     }
     calc_dimensions_by_data_list_and_assign_to_vars_by_address(data_list, &n, &d);
@@ -73,6 +74,7 @@ static PyObject* py_ddg(PyObject* self, PyObject* args) {
     int n, d;
     PyObject *data_list;
     if (!PyArg_ParseTuple(args, "O", &data_list)) {
+        printf("An Error Has Occurred");
         return NULL;
     }
 
@@ -100,6 +102,7 @@ static PyObject* py_norm(PyObject* self, PyObject* args) {
     int n = 0, d = 0;
     PyObject *data_list;
     if (!PyArg_ParseTuple(args, "O", &data_list)) {
+        printf("An Error Has Occurred");
         return NULL;
     }
     calc_dimensions_by_data_list_and_assign_to_vars_by_address(data_list, &n, &d);
@@ -126,6 +129,7 @@ static PyObject* py_symnmf(PyObject* self, PyObject* args) {
     PyObject *W_list, *H_list;
     int n, k;
     if (!PyArg_ParseTuple(args, "OO", &W_list, &H_list)) {
+        printf("An Error Has Occurred");
         return NULL;
     }
     calc_dimensions_by_data_list_and_assign_to_vars_by_address(W_list, &n, &n);
