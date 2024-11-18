@@ -56,7 +56,6 @@ def main():
         sys.exit(1)
 
     if goal == "sym":
-        print("X:", X)
         similarity_matrix = symnmf_module.sym(X)
         np.savetxt(sys.stdout, similarity_matrix, delimiter=",", fmt="%.4f")
 
