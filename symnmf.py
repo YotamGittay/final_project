@@ -22,6 +22,9 @@ def parse_args():
 def read_data(file_name):
     try:
         data = np.loadtxt(file_name, delimiter=",").tolist()
+        # If one dimenional array, turn every element into a list
+        if not isinstance(data[0], list):
+            data = [[x] for x in data]
         return data
     except Exception:
         print("An Error Has Occurred")
@@ -53,6 +56,7 @@ def main():
         sys.exit(1)
 
     if goal == "sym":
+        print("X:", X)
         similarity_matrix = symnmf_module.sym(X)
         np.savetxt(sys.stdout, similarity_matrix, delimiter=",", fmt="%.4f")
 
